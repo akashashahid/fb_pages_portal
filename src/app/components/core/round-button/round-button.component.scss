@@ -1,0 +1,28 @@
+.round{
+    width: 100%;
+	padding: 14px 30px;
+	border-radius:100px;
+    font-size: 15px;
+	border:none;
+	text-align:center;
+	color:#fff;
+	cursor: pointer;
+    font-family: Montserrat-Medium;
+    font-weight: bold;
+}
+
+.orange {
+    background-color:#f69220;
+}
+
+.orange:hover {
+    background-color:#056db3;
+}
+
+.blue {
+    background-color:#056db3;
+}
+
+.blue:hover {
+    background-color:#f69220;
+}

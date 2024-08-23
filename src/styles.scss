@@ -1,0 +1,24 @@
+@import "src/assets/styles/variable.scss";
+
+div.required::after {
+  content: "*";
+  color: red;
+}
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+//import coreui style
+@import "~@coreui/coreui/scss/coreui.scss";
+
+//import icons
+@import "~@coreui/icons/css/coreui-icons.css";
+@import "~simple-line-icons/css/simple-line-icons.css";
+
+// bootstrap style toast
+@import "~ngx-toastr/toastr-bs4-alert.scss";
+
+@charset "utf-8";
+
+@font-face {
+  font-family: Inter;
+  src: url(/assets/fonts/Inter-VariableFont_opsz\,wght.ttf);
+}
