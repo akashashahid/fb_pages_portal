@@ -1,0 +1,40 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1, h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .pages-section, .conversations-section {
+    margin-top: 20px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+  }
+  
+  .messages-list {
+    margin-top: 10px;
+  }
+  
+  span {
+    font-weight: bold;
+    display: block;
+  }
+  
+  p {
+    margin: 5px 0 0 0;
+  }
+  

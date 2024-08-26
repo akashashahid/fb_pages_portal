@@ -1,0 +1,28 @@
+<div class="container">
+    <h1>Facebook Conversations</h1>
+  
+    <div class="pages-section">
+      <h2>Pages</h2>
+      <ul>
+        <li *ngFor="let page of pages">
+          <span>Page ID: {{ page.id }}</span>
+        </li>
+      </ul>
+    </div>
+  
+    <div class="conversations-section">
+      <h2>Conversations</h2>
+      <ul>
+        <li *ngFor="let conversation of conversations">
+          <span>Conversation ID: {{ conversation.id }}</span>
+          <ul class="messages-list">
+            <li *ngFor="let message of conversation.messages">
+              <span>Message ID: {{ message.id }}</span>
+              <p>Message Content: {{ message.content }}</p>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
