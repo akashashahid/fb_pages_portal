@@ -43,8 +43,7 @@ export class FacebookConversationsService {
       return new Promise((resolve, reject) => {
         this.jwtService.getLongLiveUserToken(shortLiveToken).then(
           (tokenData: any) => {
-            const longLivedUserToken = tokenData.access_token;
-            this.jwtService.getPageTokens(longLivedUserToken).toPromise().then(
+            this.jwtService.getPageTokens(tokenData).toPromise().then(
               (pages: any) => {
                 const result = {
                   pages: [] as any[],
