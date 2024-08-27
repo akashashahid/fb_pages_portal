@@ -17,9 +17,16 @@
           <span>Conversation ID: {{ conversation.id }}</span>
           <ul class="messages-list">
             <li *ngFor="let message of conversation.messages">
-              <span>Message ID: {{ message.id }}</span>
-              <p>Message Content: {{ message.content }}</p>
+
+
+              <ul>
+              <li *ngFor="let messageContent of message.messages">
+                  <p>Message Content: {{ messageContent.message }}</p>
+              </li>
+              </ul>
+
             </li>
+            
           </ul>
         </li>
       </ul>
