@@ -13,7 +13,12 @@ export const environment = {
   disableConsoleLogging: false,
   lang: "en",
   api: {
-
+    host: 'https://graph.facebook.com/v20.0',
+    appId: '8414401781955356',
+    appSecret: '094c94799114bac363d1d2088ea51034',
+    userTokens: {
+      1: 'EAB3k2pU1ZBxwBOxyPh77xlTjUYNtj7827tZCUB9Sk3ubaKmFadE1uvflNwEVaiXDH7yiPSoRw3fWMMGaiuBBjQptxkfEHGBYy3myDhGgd1011ZB2s76vWtnLeKOrrq5U3ieLRpRgVQjQMsmbOJGTIzrNIdv0qMkBOODZBRTUCX9YuRWZAaRXBmEZB01OG7GL3l7stpSzpkTNoO2A6cHni9w8MZBAAZDZD',
+    },
   },
 };
 
