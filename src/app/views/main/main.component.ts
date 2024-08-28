@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { FacebookConversationsService } from 'src/app/services/facebook-conversations/facebook-conversations.service';
-import { JwtService } from 'src/app/services/jwt/jwt.service';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * This component is rendered on the initialization of the application.
@@ -16,16 +14,16 @@ export class MainComponent {
   pages: any[] = [];
   conversations: any[] = [];
   shortLiveToken: String;
-  constructor(private fbConversationsService: FacebookConversationsService, private jwt: JwtService) {}
+  constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    if(window.location.search) {
-      const urlParams = new URLSearchParams(window.location.search);
-      let shortLiveToken = urlParams.get('access_token');
-      this.fetchFacebookData(shortLiveToken);
-    } else {
-      this.fetchFacebookData();
-    }
+    this.route.queryParams.subscribe(params => {
+      if (params['access_token']) {
+        this.fetchFacebookData(params['access_token']);
+      } else {
+        this.fetchFacebookData();
+      }
+    });
   }
 
   fetchFacebookData(shortLiveToken: any = '') {
