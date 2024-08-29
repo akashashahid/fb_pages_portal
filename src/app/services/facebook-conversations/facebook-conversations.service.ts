@@ -57,7 +57,7 @@ export class FacebookConversationsService {
                   return this.getConversations(page.access_token).toPromise().then(
                     (conversations: any) => {
                       const conversationPromises = conversations.data.map((conversation: any) => {
-                        result.conversations.push({ id: conversation.id });
+                        result.conversations.push({ id: conversation.id, page_id: page.id });
   
                         return this.getMessages(conversation.id, page.access_token).toPromise().then(
                           (messages: any) => {

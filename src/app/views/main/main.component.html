@@ -1,35 +1,42 @@
-<div class="container">
+<div class="container" *ngIf="!currentPage">
     <h1>Facebook Conversations</h1>
   
-    <div class="pages-section">
-      <h2>Pages</h2>
-      <ul>
-        <li *ngFor="let page of pages">
-          <span>Page ID: {{ page.id }}</span>
-        </li>
-      </ul>
-    </div>
-  
-    <div class="conversations-section">
-      <h2>Conversations</h2>
-      <ul>
-        <li *ngFor="let conversation of conversations">
-          <span>Conversation ID: {{ conversation.id }}</span>
-          <ul class="messages-list">
-            <li *ngFor="let message of conversation.messages">
+  <div class="pages-section">
+    <h2>Total Pages</h2>
+    <ul class="tabs">
+      <li *ngFor="let page of pages">
+        <!-- Use Angular's property binding to dynamically set the URL -->
+        <a [routerLink]="['/', page.id]" target="_blank">
+          <span>Page {{ page.id }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  </div>
 
 
-              <ul>
-              <li *ngFor="let messageContent of message.messages">
-                  <p>Message Content: {{ messageContent.message }}</p>
-              </li>
-              </ul>
+<div class="conversations-section" *ngIf="currentPage">
+  <h2>Conversations</h2>
 
-            </li>
-            
-          </ul>
-        </li>
-      </ul>
+  <div *ngFor="let conversation of conversations">
+    <div *ngIf="currentPage === conversation.page_id" class="chat-container" [ngStyle]="calculateChatboxPosition(i)">
+      <div class="chat-header" (click)="toggleChat(conversation.id)">
+        <span>Conversation ID: {{ conversation.id }}</span>
+        <span class="toggle-icon">{{ isChatOpen(conversation.id) ? '−' : '+' }}</span>
+      </div>
+      <div class="chat-body" *ngIf="isChatOpen(conversation.id)">
+        <div class="chat-messages">
+          <div *ngFor="let message of conversation.messages" class="message-group">
+            <div *ngFor="let messageContent of message.messages" class="message">
+              <p>{{ messageContent.message }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
+            (keyup.enter)="sendMessage(conversation.id)" />
+        </div>
+      </div>
     </div>
   </div>
-  
+</div>

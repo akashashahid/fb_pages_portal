@@ -15,6 +15,10 @@ export const routes: Routes = [
   { 
     path: 'callback', 
     component: MainComponent 
+  },
+  {
+    path: ':id',
+    component: MainComponent
   }
 ];
 
