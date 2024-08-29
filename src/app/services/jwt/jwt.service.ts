@@ -17,27 +17,21 @@ const API = environment.api;
  */
 export class JwtService {
   private token: string = '';
-  private tokenExpiry: number = 0;
-  private REDIRECT_URI = window.location.href; 
+  private REDIRECT_URI = `${window.location.origin}/callback`; 
   private STATE = 'randomlyGeneratedString';
 
   constructor(private translate: TranslatePipe, private http: HttpClient) {}
-
-  generateShortLiveToken(): any {
-    this.redirectToFacebookLogin();
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('access_token');
-  }
 
   getToken(): String {
     if (this.isTokenExpired()) { 
       return '';
     }
-    return this.token;//get from saved memory
+    this.token = JSON.parse(localStorage.getItem("token"));
+    return this.token;
   }
 
   redirectToFacebookLogin() {
-    const fbOAuthUrl = `${API.host}/dialog/oauth?client_id=${API.appId}&redirect_uri=${this.REDIRECT_URI}&state=${this.STATE}`;
+    const fbOAuthUrl = `https://www.facebook.com/v20.0/dialog/oauth?response_type=token&client_id=${API.appId}&redirect_uri=${this.REDIRECT_URI}&auth_type=rerequest&scope=${API.scope}`;
     window.location.href = fbOAuthUrl;
   }
   // Save the token and its expiry time in memory
@@ -47,25 +41,23 @@ export class JwtService {
         this.translate.transform('generic[responses][error][token][002]')
       );
     }
-
-    this.token = token;
-    this.tokenExpiry = Date.now() + expiresIn * 1000; // Convert expires_in to milliseconds
+    localStorage.setItem("token", JSON.stringify(token));
+    localStorage.setItem("tokenExpiry", JSON.stringify(Date.now() + 59 * 24 * 60 * 60 * 1000));
   }
 
   // Check if the token is expired
   isTokenExpired(): boolean {
-    return this.tokenExpiry < Date.now();
+    return JSON.parse(localStorage.getItem("tokenExpiry")) < Date.now();
   }
 
   // Fetch a long-lived user token, renewing it if expired
   public getLongLiveUserToken(shortTokenAfterLogin): Promise<string> {
-    if (!this.getToken()) {
-      this.redirectToFacebookLogin();
-    } else if(shortTokenAfterLogin) {
+    if(shortTokenAfterLogin) {
       let params = new HttpParams()
         .set('grant_type', 'fb_exchange_token')
         .set('client_id', API.appId)
         .set('client_secret', API.appSecret)
+        .set('scope', API.scope)
         .set('fb_exchange_token', shortTokenAfterLogin);
 
       return this.http
@@ -76,6 +68,8 @@ export class JwtService {
           this.saveToken(response.access_token, response.expires_in);
           return response.access_token;
         });
+    } else if (!this.getToken()) {
+      this.redirectToFacebookLogin();
     } else {
       return Promise.resolve(this.token);
     }

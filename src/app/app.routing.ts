@@ -12,6 +12,10 @@ export const routes: Routes = [
     path: "",
     component: MainComponent,
   },
+  { 
+    path: 'callback', 
+    component: MainComponent 
+  }
 ];
 
 @NgModule({
