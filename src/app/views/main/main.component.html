@@ -13,7 +13,7 @@
   </div>
   </div>
 
-<div class="messenger-container">
+<div class="messenger-container" *ngIf="currentPage">
   <div class="chat-tabs">
     <ul>
       <li *ngFor="let conversation of conversations" (click)="selectConversation(conversation)">
