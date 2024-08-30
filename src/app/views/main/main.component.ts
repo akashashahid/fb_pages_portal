@@ -15,8 +15,9 @@ export class MainComponent {
   conversations: any[] = [];
   shortLiveToken: String;
   currentPage: any = null;
-  openChats: { [key: string]: boolean } = {};
-  selectedConversation: any = null;
+  selectedConversation: any;
+
+  
   constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -45,20 +46,7 @@ export class MainComponent {
       .catch(error => console.error('Error fetching data:', error));
   }
 
-
-  toggleChat(conversationId: string) {
-    this.openChats[conversationId] = !this.openChats[conversationId];
+  selectConversation(conversation: any) {
+    this.selectedConversation = conversation;
   }
-
-  isChatOpen(conversationId: string): boolean {
-    return this.openChats[conversationId];
-  }
-
-  calculateChatboxPosition(index: number): object {
-    return {
-      right: `${20 + index * 310}px`, // Adjust 310 based on your chatbox width + margin
-      bottom: '0px'
-    };
-  }
-  
 }
