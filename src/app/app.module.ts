@@ -48,6 +48,7 @@ import { environment } from "src/environments/environment";
 import { ShowFormFieldErrorsComponent } from "src/app/components/core/show-form-field-errors/show-form-field-errors.component";
 import { RoundButtonComponent } from "./components/core/round-button/round-button.component";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { NavheaderComponent } from './views/navheader/navheader.component';
 
 /**
  * This function initializes the TranslateService for use in application
@@ -77,6 +78,7 @@ export function setupTranslateFactory(service: TranslateService): Function {
     ButtonComponent,
     ShowFormFieldErrorsComponent,
     RoundButtonComponent,
+    NavheaderComponent
   ],
   /**
    *

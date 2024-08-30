@@ -1,0 +1,32 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #adaeb1;
+    color: white;
+}
+.logo img {
+    height: 50px;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 4rem;
+    margin-bottom: 0;
+    justify-content: flex-end;
+    margin-right: 40px;
+}
+nav ul li a {
+    color: #1d3469;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 700;
+}
+nav ul li a:hover {
+    text-decoration: none;
+    color: #3d5c95;
+}
+.nav-tabs ul li {
+    display: inline;
+}
