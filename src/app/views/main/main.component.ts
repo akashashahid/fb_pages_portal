@@ -43,7 +43,6 @@ export class MainComponent {
           messages: result.messages.filter(msg => msg.conversationId === conversation.id)
 
         }));
-        console.log(result);
       })
     
       .catch(error => console.error('Error fetching data:', error));

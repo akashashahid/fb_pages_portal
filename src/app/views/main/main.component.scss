@@ -2,13 +2,16 @@
   display: flex;
   height: 85vh;
   font-family: Arial, sans-serif;
+      padding: 25px;
 }
 
 .chat-tabs {
-  width: 250px;
+  width: 300px;
   background-color: #f0f0f0;
   border-right: 1px solid #ccc;
   overflow-y: auto;
+  margin-right: 12px;
+  border-radius: 7px;
 }
 
 .chat-tabs ul {
@@ -23,6 +26,8 @@
   border-bottom: 1px solid #ddd;
   background-color: white;
   transition: background-color 0.3s ease;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .chat-tabs li:hover {
@@ -40,6 +45,8 @@
   background-color: #007bff;
   color: white;
   border-bottom: 1px solid #ccc;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
 }
 
 .chat-messages {
@@ -54,7 +61,6 @@
 }
 
 .message {
-  background-color: #e1e1e1;
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 5px;
@@ -66,6 +72,8 @@
   padding: 15px;
   border-top: 1px solid #ccc;
   background-color: white;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
 }
 
 .chat-input input {
@@ -99,11 +107,48 @@
   color: #1d3469;
   font-size: 42px;
   font-weight: 700;
+  text-align: center;
 }
 
+.timestamp{
+  font-size: 11px;
+}
+.client-msg{
+  background-color: #e1e1e1;
+  padding: 10px;
+  border-radius: 6px;
+  width: fit-content;
+  font-size: 17px;
+}
+.main-heading{
+  margin-top: 45px;
+}
 
+.tabs {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
+.tabs li {
+  margin: 5px 0;
+}
 
+.tabs a {
+  display: block;
+  padding: 10px;
+  background-color: #f4f4f4;
+  color: #333;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.tabs a:hover {
+  background-color: #ddd;
+}
 
 
 
