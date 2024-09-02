@@ -1,4 +1,4 @@
-<div class="container" *ngIf="!currentPage">
+<div class="container main-heading" *ngIf="!currentPage">
     <h1 class="page-title">Facebook Bussiness Page Portal</h1>
   
   <div class="pages-section">
@@ -13,11 +13,11 @@
   </div>
   </div>
 
-<div class="messenger-container">
-  <div class="chat-tabs">
-    <ul>
-      <li *ngFor="let conversation of conversations" (click)="selectConversation(conversation)">
-        <span>{{ conversation.id }}</span>
+<div class="messenger-container" *ngIf="currentPage">
+  <div class="chat-tabs" >
+    <ul *ngFor="let conversation of conversations" >
+      <li *ngIf="currentPage === conversation.page_id" (click)="selectConversation(conversation)">
+        <span >{{ conversation.id }}</span>
       </li>
     </ul>
   </div>
@@ -29,7 +29,9 @@
     <div class="chat-messages">
       <div *ngFor="let message of selectedConversation.messages" class="message-group">
         <div *ngFor="let messageContent of message.messages" class="message">
-          <p>{{ messageContent.message }}</p>
+          <p class="client-msg">{{ messageContent.message }}</p>
+          <p class="timestamp">{{ messageContent.created_time | date: 'short'}}</p>
+          <p>{{ messageContent.created_by }}</p>
         </div>
       </div>
     </div>
@@ -41,5 +43,6 @@
       </button>
     </div>
   </div>
+
 </div>
 

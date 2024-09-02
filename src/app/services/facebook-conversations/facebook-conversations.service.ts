@@ -30,7 +30,7 @@ export class FacebookConversationsService {
     private getMessages(conversationId: string, pageToken: string) {
       return this.http
         .get(`${API.host}/${conversationId}/messages`, {
-          params: new HttpParams().set('access_token', pageToken).set('fields', 'message,created_time'),
+          params: new HttpParams().set('access_token', pageToken).set('fields', 'message,created_time,created_by'),
         })
         .pipe(catchError(this.jwtService.formatErrors));
     }

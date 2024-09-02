@@ -41,8 +41,10 @@ export class MainComponent {
         this.conversations = result.conversations.map(conversation => ({
           ...conversation,
           messages: result.messages.filter(msg => msg.conversationId === conversation.id)
+
         }));
       })
+    
       .catch(error => console.error('Error fetching data:', error));
   }
 
@@ -50,3 +52,4 @@ export class MainComponent {
     this.selectedConversation = conversation;
   }
 }
+
