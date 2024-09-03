@@ -12,8 +12,8 @@ export const environment = {
   lang: "en",
   api: {
     host: 'https://graph.facebook.com/v20.0',
-    appId: '8414401781955356',
-    appSecret: '094c94799114bac363d1d2088ea51034',
+    appId: '1693920651375034',
+    appSecret: '170f1c14bd52b78656651aaa4d6ee6c4',
     scope: 'pages_show_list,pages_messaging,pages_read_engagement,pages_manage_metadata',
     configId: '475967048590473',
   },
