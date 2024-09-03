@@ -1,4 +1,3 @@
-import { NgxLoggerLevel } from "ngx-logger";
 
 /**
  * The file contents for the current environment will overwrite these during build.
@@ -9,7 +8,6 @@ import { NgxLoggerLevel } from "ngx-logger";
 
 export const environment = {
   production: false,
-  loggerLevel: NgxLoggerLevel.DEBUG,
   disableConsoleLogging: false,
   lang: "en",
   api: {

@@ -3,32 +3,16 @@ import { NgModule, NO_ERRORS_SCHEMA, APP_INITIALIZER } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppComponent } from "src/app/app.component";
 
-/*Perfect Sidebar Module*/
-import { PerfectScrollbarModule } from "ngx-perfect-scrollbar";
-import { PerfectScrollbarConfigInterface } from "ngx-perfect-scrollbar";
 
 /*Import 3rd party Components*/
-import { MDBBootstrapModule } from "angular-bootstrap-md";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { ToastrModule } from "ngx-toastr";
-import { BsDropdownModule } from "ngx-bootstrap/dropdown";
-import { RecaptchaModule, RecaptchaFormsModule } from "ng-recaptcha";
 
-/*CoreUI Modules*/
-import {
-  AppAsideModule,
-  AppBreadcrumbModule,
-  AppHeaderModule,
-  AppFooterModule,
-  AppSidebarModule,
-} from "@coreui/angular";
 
 /*Import routing module*/
 import { AppRoutingModule } from "src/app/app.routing";
 
 /* Import logger */
-import { NgxLoggerLevel, LoggerModule } from "ngx-logger";
 
 /*services*/
 import { TranslateService } from "src/app/services/translate/translate.service";
@@ -86,31 +70,14 @@ export function setupTranslateFactory(service: TranslateService): Function {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot({
-      maxOpened: 1,
-      autoDismiss: true
-    }),
-    MDBBootstrapModule.forRoot(),
-    AppAsideModule,
-    AppBreadcrumbModule.forRoot(),
-    BsDropdownModule.forRoot(),
-    AppFooterModule,
-    AppHeaderModule,
-    AppSidebarModule,
-    PerfectScrollbarModule,
+    
     FormsModule,
     ReactiveFormsModule,
-    RecaptchaModule,
-    RecaptchaFormsModule,
+    
     HttpClientModule,
     AppRoutingModule,
     //  Relies on variable within environment configuration. If isDebugMode true it will show log
-    LoggerModule.forRoot({
-      level: environment.loggerLevel,
-      disableConsoleLogging: environment.disableConsoleLogging,
-      // serverLogLevel
-      serverLogLevel: NgxLoggerLevel.OFF,
-    }),
+
     NgbModule
   ],
   /**
