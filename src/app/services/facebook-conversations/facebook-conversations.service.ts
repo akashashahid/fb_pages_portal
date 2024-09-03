@@ -16,34 +16,30 @@ export class FacebookConversationsService {
   /**
    * Fetches conversations for a given page token.
    */
-    private getConversations() {
-      const url = `${API.host}/me/conversations`;
-      return this.jwtService.get(url);
+    private getConversations(pageToken: string) {
+      return this.http
+        .get(`${API.host}/me/conversations`, {
+          params: new HttpParams().set('access_token', pageToken),
+        })
+        .pipe(catchError(this.jwtService.formatErrors));
     }
   
     /**
      * Fetches messages for a given conversation ID.
      */
-    private getMessages(conversationId: string) {
-      const url = `${API.host}/${conversationId}/messages`;
-      const params = new HttpParams().set('fields', 'message,created_time');
-      return this.jwtService.get(url, params);
-    }
-  
-    /**
-     * Sends a message to a specific conversation.
-     */
-    public sendMessage(conversationId: string, message: string, shortLiveToken?: string) {
-      const url = `${API.host}/${conversationId}/messages`;
-      const body = { message };
-      return this.jwtService.post(url, body, shortLiveToken);
+    private getMessages(conversationId: string, pageToken: string) {
+      return this.http
+        .get(`${API.host}/${conversationId}/messages`, {
+          params: new HttpParams().set('access_token', pageToken).set('fields', 'message,created_time,created_by'),
+        })
+        .pipe(catchError(this.jwtService.formatErrors));
     }
   
     /**
      * This method will return pages without names, conversations without names,
      * and messages in each conversation.
      */
-    public getAllConversationsAndMessages(shortLiveToken?: string) {
+     public getAllConversationsAndMessages(shortLiveToken) {
       return new Promise((resolve, reject) => {
         this.jwtService.getLongLiveUserToken(shortLiveToken).then(
           (tokenData: any) => {
@@ -58,22 +54,24 @@ export class FacebookConversationsService {
                 const pagePromises = pages.data.map((page: any) => {
                   result.pages.push({ id: page.id });
     
-                  return this.getConversations().then(
+                  return this.getConversations(page.access_token).toPromise().then(
                     (conversations: any) => {
                       const conversationPromises = conversations.data.map((conversation: any) => {
                         result.conversations.push({ id: conversation.id, page_id: page.id });
-    
-                        return this.getMessages(conversation.id).then(
+  
+                        return this.getMessages(conversation.id, page.access_token).toPromise().then(
                           (messages: any) => {
                             result.messages.push({ conversationId: conversation.id, messages: messages.data });
                           }
                         );
                       });
+                      // Wait for all conversation promises to resolve
                       return Promise.all(conversationPromises);
                     }
                   );
                 });
-    
+  
+                // Wait for all page promises to resolve
                 Promise.all(pagePromises)
                   .then(() => resolve(result))
                   .catch(error => reject(error));
