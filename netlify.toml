@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build]
+  command = "ng build --configuration production"
+  publish = "dist/portal"
+
+[build.environment]
+  NODE_VERSION = "16.20.2"
