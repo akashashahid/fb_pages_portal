@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from "src/environments/environment";
 import { TranslatePipe } from 'src/app/pipes/translate/translate.pipe';
-import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 
@@ -17,10 +16,9 @@ const API = environment.api;
  * and retrieve the token
  */
 export class JwtService {
-  private token: string = '';
   private REDIRECT_URI = `${window.location.origin}/callback`; 
   private STATE = 'randomlyGeneratedString';
-  private allPageTokens = [];
+  private allPageTokens = {};
 
   constructor(private translate: TranslatePipe, private http: HttpClient) {}
 
@@ -34,9 +32,9 @@ export class JwtService {
         const wb: XLSX.WorkBook = XLSX.read(buffer, { type: 'array' });
         const wsname: string = wb.SheetNames[0];
         const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-        const data: any[] = XLSX.utils.sheet_to_json(ws);
+        const data = XLSX.utils.sheet_to_json(ws);
         allValidTokens = data.map(row => {
-          if (this.isTokenExpired(row['tokenExpiry'])) { 
+          if (!this.isTokenExpired(row['tokenExpiry'])) { 
             return {
               longToken: row['longToken'],
               tokenExpiry: row['tokenExpiry']
@@ -127,7 +125,6 @@ export class JwtService {
   fetchAllPageTokens() {
     return new Promise((resolve, reject) => {
       this.getAllValidTokens().then(allValidTokens => {
-        console.log('allValidTokens 131', allValidTokens)
         const pageTokensRequests = allValidTokens.map(tokenObj => {
           return this.http.get(`${API.host}/me/accounts`, {
             params: new HttpParams().set('access_token', tokenObj.longToken),
@@ -135,12 +132,10 @@ export class JwtService {
         });
         Promise.all(pageTokensRequests)
           .then(results => {
-
-            console.log(results);
             // Results will be an array of responses from the API for each token
-            this.allPageTokens = results.map((response: any) => response.data);
-            console.log('All Page Tokens:', this.allPageTokens);
-            
+            this.allPageTokens = results.reduce((acc: any, response: any) => {
+              return acc.concat(response.data);
+            }, []);
             resolve(this.allPageTokens); // Resolve the final promise with allPageTokens
           })
           .catch(error => {
