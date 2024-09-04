@@ -44,6 +44,7 @@
     "rxjs": "^6.6.7",
     "smtp": "^0.1.4",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {

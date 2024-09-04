@@ -35,7 +35,7 @@ export class MainComponent {
   }
 
   fetchFacebookData(shortLiveToken: any = '') {
-    this.fbConversationsService.getAllConversationsAndMessages(shortLiveToken)
+    this.fbConversationsService.getAllConversationsAndMessages()
       .then((result: any) => {
         this.pages = result.pages;
         this.conversations = result.conversations.map(conversation => ({
