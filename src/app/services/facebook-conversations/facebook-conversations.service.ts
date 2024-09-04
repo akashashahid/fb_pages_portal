@@ -39,45 +39,42 @@ export class FacebookConversationsService {
      * This method will return pages without names, conversations without names,
      * and messages in each conversation.
      */
-     public getAllConversationsAndMessages(shortLiveToken) {
+     public getAllConversationsAndMessages() {
       return new Promise((resolve, reject) => {
-        this.jwtService.getLongLiveUserToken(shortLiveToken).then(
-          (tokenData: any) => {
-            this.jwtService.getPageTokens(tokenData).toPromise().then(
-              (pages: any) => {
-                const result = {
-                  pages: [] as any[],
-                  conversations: [] as any[],
-                  messages: [] as any[],
-                };
+        // Call the function to fetch all valid tokens and page data
+        this.jwtService.fetchAllPageTokens().then(
+          (allPageTokens: any[]) => {
+            const result = {
+              pages: [] as any[],
+              conversations: [] as any[],
+              messages: [] as any[],
+            };
     
-                const pagePromises = pages.data.map((page: any) => {
-                  result.pages.push({ id: page.id });
+            // Process each page token
+            const pagePromises = allPageTokens.map((pageData: any) => {
+              result.pages.push({ id: pageData.id });
     
-                  return this.getConversations(page.access_token).toPromise().then(
-                    (conversations: any) => {
-                      const conversationPromises = conversations.data.map((conversation: any) => {
-                        result.conversations.push({ id: conversation.id, page_id: page.id });
-  
-                        return this.getMessages(conversation.id, page.access_token).toPromise().then(
-                          (messages: any) => {
-                            result.messages.push({ conversationId: conversation.id, messages: messages.data });
-                          }
-                        );
-                      });
-                      // Wait for all conversation promises to resolve
-                      return Promise.all(conversationPromises);
-                    }
-                  );
-                });
-  
-                // Wait for all page promises to resolve
-                Promise.all(pagePromises)
-                  .then(() => resolve(result))
-                  .catch(error => reject(error));
-              },
-              error => reject(error)
-            );
+              return this.getConversations(pageData.access_token).toPromise().then(
+                (conversations: any) => {
+                  const conversationPromises = conversations.data.map((conversation: any) => {
+                    result.conversations.push({ id: conversation.id, page_id: pageData.id });
+    
+                    return this.getMessages(conversation.id, pageData.access_token).toPromise().then(
+                      (messages: any) => {
+                        result.messages.push({ conversationId: conversation.id, messages: messages.data });
+                      }
+                    );
+                  });
+                  // Wait for all conversation promises to resolve
+                  return Promise.all(conversationPromises);
+                }
+              );
+            });
+    
+            // Wait for all page promises to resolve
+            Promise.all(pagePromises)
+              .then(() => resolve(result))
+              .catch(error => reject(error));
           },
           error => reject(error)
         );
