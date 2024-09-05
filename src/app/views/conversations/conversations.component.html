@@ -1,0 +1,33 @@
+<div class="messenger-container">
+  <div class="chat-tabs" >
+    <ul *ngFor="let conversation of conversations" >
+      <li (click)="selectConversation(conversation)">
+        <span >{{ conversation.id }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="chat-view" *ngIf="selectedConversation">
+    <div class="chat-header">
+      <span>{{ selectedConversation.id }}</span>
+    </div>
+    <div class="chat-messages">
+      <div *ngFor="let message of selectedConversation.messages" class="message-group">
+        <div *ngFor="let messageContent of message.messages" [ngClass]="{'message': messageContent.from.id != selectedConversation.page_id, 'my-message' : messageContent.from.id == selectedConversation.page_id }">
+          <p class="client-msg">{{ messageContent.message }}</p>
+          <p class="timestamp">{{ messageContent.created_time | date: 'short'}}</p>
+          <p>{{ messageContent.created_by }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
+        (keyup.enter)="sendMessage(selected_psid, selectedConversation.page_id, newMessage)" />
+      <button class="send-btn" (click)="sendMessage(selected_psid, selectedConversation.page_id, newMessage)">
+        <i class="fa fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+</div>
+

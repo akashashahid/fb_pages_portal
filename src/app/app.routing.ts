@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { MainComponent } from "src/app/views/main/main.component";
+import { ConversationsComponent } from "./views/conversations/conversations.component";
 /**
  * Contains a list of routes to enable navigation from one view to the next
  * as users perform application tasks
@@ -17,8 +18,8 @@ export const routes: Routes = [
     component: MainComponent 
   },
   {
-    path: ':id',
-    component: MainComponent
+    path: 'conversation/:id',
+    component: ConversationsComponent
   }
 ];
 

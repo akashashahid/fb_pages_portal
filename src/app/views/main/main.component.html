@@ -1,48 +1,14 @@
-<div class="container main-heading" *ngIf="!currentPage">
+<div class="container main-heading">
     <h1 class="page-title">Facebook Bussiness Page Portal</h1>
   
   <div class="pages-section">
     <ul class="tabs">
       <li *ngFor="let page of pages">
         <!-- Use Angular's property binding to dynamically set the URL -->
-        <a [routerLink]="['/', page.id]" target="_blank">
+        <a [routerLink]="['/conversation', page.id]" target="_blank">
           <span>Page {{ page.id }}</span>
         </a>
       </li>
     </ul>
   </div>
   </div>
-
-<div class="messenger-container" *ngIf="currentPage">
-  <div class="chat-tabs" >
-    <ul *ngFor="let conversation of conversations" >
-      <li *ngIf="currentPage === conversation.page_id" (click)="selectConversation(conversation)">
-        <span >{{ conversation.id }}</span>
-      </li>
-    </ul>
-  </div>
-
-  <div class="chat-view" *ngIf="selectedConversation">
-    <div class="chat-header">
-      <span>{{ selectedConversation.id }}</span>
-    </div>
-    <div class="chat-messages">
-      <div *ngFor="let message of selectedConversation.messages" class="message-group">
-        <div *ngFor="let messageContent of message.messages" class="message">
-          <p class="client-msg">{{ messageContent.message }}</p>
-          <p class="timestamp">{{ messageContent.created_time | date: 'short'}}</p>
-          <p>{{ messageContent.created_by }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="chat-input">
-      <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
-        (keyup.enter)="sendMessage(selectedConversation.id)" />
-      <button class="send-btn" (click)="sendMessage(selectedConversation.id)">
-        <i class="fa fa-paper-plane"></i>
-      </button>
-    </div>
-  </div>
-
-</div>
-

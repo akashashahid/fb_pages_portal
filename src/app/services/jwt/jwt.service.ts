@@ -122,7 +122,7 @@ export class JwtService {
   // }
 
   // Fetch page tokens using the long-lived user token
-  fetchAllPageTokens() {
+  cacheAllPageTokens() {
     return new Promise((resolve, reject) => {
       this.getAllValidTokens().then(allValidTokens => {
         const pageTokensRequests = allValidTokens.map(tokenObj => {
@@ -133,10 +133,17 @@ export class JwtService {
         Promise.all(pageTokensRequests)
           .then(results => {
             // Results will be an array of responses from the API for each token
-            this.allPageTokens = results.reduce((acc: any, response: any) => {
-              return acc.concat(response.data);
+            let allTokens = results.reduce((acc: any[], response: any) => {
+              const tokens = response.data.map((page: any) => {
+                  // Store each access_token in localStorage with id as the key
+                  localStorage.setItem(page.id, page.access_token);
+                  return {
+                      [page.id]: page.access_token
+                  };
+              });
+              return acc.concat(tokens);
             }, []);
-            resolve(this.allPageTokens); // Resolve the final promise with allPageTokens
+            resolve(allTokens); // Resolve the final promise with allPageTokens
           })
           .catch(error => {
             console.error('Error fetching page tokens:', error);
@@ -148,6 +155,12 @@ export class JwtService {
       });
     });
   }
+
+  // Fetch page tokens using the long-lived user token
+  getPageToken(page_id) {
+    return localStorage.getItem(page_id);
+  }
+
 
   // Format errors
   public formatErrors(error: any) {
