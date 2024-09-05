@@ -21,35 +21,22 @@ export class MainComponent {
   constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.currentPage = params.get('id');
-    });
-
-    this.route.queryParams.subscribe(params => {
-      if (params['access_token']) {
-        this.fetchFacebookData(params['access_token']);
-      } else {
-        this.fetchFacebookData();
-      }
-    });
+    // this.route.queryParams.subscribe(params => {
+    //   if (params['access_token']) {
+    //     window.history.replaceState(null, null, window.location.href.replace(window.location.hash, ''));
+    //     this.displayPages(params['access_token']);
+    //   } else {
+        this.displayPages();
+    //   }
+    // });
   }
 
-  fetchFacebookData(shortLiveToken: any = '') {
-    this.fbConversationsService.getAllConversationsAndMessages()
-      .then((result: any) => {
-        this.pages = result.pages;
-        this.conversations = result.conversations.map(conversation => ({
-          ...conversation,
-          messages: result.messages.filter(msg => msg.conversationId === conversation.id)
-
-        }));
+  displayPages() {
+    this.fbConversationsService.getAllPages()
+      .then((pages: any) => {
+        this.pages = pages;
       })
-    
-      .catch(error => console.error('Error fetching data:', error));
-  }
-
-  selectConversation(conversation: any) {
-    this.selectedConversation = conversation;
+      .catch(error => console.error('Error getting pages:', error));
   }
 }
 

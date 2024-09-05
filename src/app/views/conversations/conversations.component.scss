@@ -1,0 +1,124 @@
+.messenger-container {
+  display: flex;
+  height: 85vh;
+  font-family: Arial, sans-serif;
+      padding: 25px;
+}
+
+.chat-tabs {
+  width: 300px;
+  background-color: #f0f0f0;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+  margin-right: 12px;
+  border-radius: 7px;
+}
+
+.chat-tabs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-tabs li {
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+  background-color: white;
+  transition: background-color 0.3s ease;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.chat-tabs li:hover {
+  background-color: #e6e6e6;
+}
+
+.chat-view {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border-bottom: 1px solid #ccc;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.message-group {
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-top: 1px solid #ccc;
+  background-color: white;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+.chat-input input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
+.send-btn {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-btn i {
+  font-size: 16px;
+}
+
+.send-btn:hover {
+  background-color: #0056b3;
+}
+
+.timestamp{
+  font-size: 11px;
+}
+.client-msg{
+  background-color: #e1e1e1;
+  padding: 10px;
+  border-radius: 6px;
+  width: fit-content;
+  font-size: 17px;
+}
+.my-message {
+  // float: right;
+}
+.my-message .client-msg{
+  color: white;
+  background-color: #007bff;
+  // float: right;
+}
