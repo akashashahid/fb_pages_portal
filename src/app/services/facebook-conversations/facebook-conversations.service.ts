@@ -16,10 +16,18 @@ export class FacebookConversationsService {
   /**
    * Fetches conversations for a given page token.
    */
-    private getConversations(pageToken: string) {
+    private getConversations(pageToken: string,filter) {
+      let params = new HttpParams().set('access_token', pageToken).set('fields', 'participants');
+      if(filter == 'unread') {
+        params = params.set('fields', 'unread_count')
+      } else if(filter == 'done') {
+        params = params.set('folder', 'page_done')
+      } else if(filter == 'spam') {
+        params = params.set('folder', 'other')
+      }
       return this.http
         .get(`${API.host}/me/conversations`, {
-          params: new HttpParams().set('access_token', pageToken),
+          params: params,
         })
         .pipe(catchError(this.jwtService.formatErrors));
     }
@@ -27,44 +35,134 @@ export class FacebookConversationsService {
     /**
      * Fetches messages for a given conversation ID.
      */
-    private getMessages(conversationId: string, pageToken: string) {
-      return this.http
-        .get(`${API.host}/${conversationId}/messages`, {
-          params: new HttpParams().set('access_token', pageToken).set('fields', 'message,created_time,from'),
-        })
-        .pipe(catchError(this.jwtService.formatErrors));
+    public getMessages(conversationId: string, page_id) {
+      const page_token = this.getPageToken(page_id);
+      return new Promise((resolve, reject) => {
+        return this.http
+          .get(`${API.host}/${conversationId}/messages`, {
+            params: new HttpParams().set('access_token', page_token).set('fields', 'message,created_time,from,tags,attachments'),
+          })
+          .pipe(catchError(this.jwtService.formatErrors))
+          .toPromise().then(
+            (messages: any) => {
+              resolve(messages);
+            }
+          );
+      });
+    }
+
+      /**
+   * Fetches labels for a given PSID.
+   */
+    public getLabels(psid, page_id) {
+      const page_token = this.getPageToken(page_id);
+      return new Promise((resolve, reject) => {
+        return this.http
+          .get(`${API.host}/${psid}/custom_labels`, {
+            params: new HttpParams().set('access_token', page_token).set('fields', 'page_label_name'),
+          })
+          .pipe(catchError(this.jwtService.formatErrors))
+          .toPromise().then(
+            (labels: any) => {
+              resolve(labels);
+            }
+          ).catch(() => resolve({'data' : []}));;
+      });
     }
   
-    public sendMessage(conversation_id: string, page_id: string, message: string) {
+    public setLabel(psid: string, page_id , label_id: string) {
       const page_token = this.getPageToken(page_id);
 
       // Construct the body as URL-encoded format
       const body = new URLSearchParams();
-      body.set('recipient', JSON.stringify({ id: conversation_id }));
+      body.set('user', psid);
+      body.set('access_token', page_token);
+
+      return new Promise((resolve, reject) => {
+        return this.http
+          .post(
+            `${API.host}/${label_id}/label`,
+            body.toString(),
+            {
+              headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+              })
+            }
+          )
+          .pipe(
+            catchError((error) => {
+              this.jwtService.formatErrors(error);
+              return [];
+            })
+          )
+          .toPromise()
+          .then((response) => resolve(response))
+          .catch(() => false);
+      })
+    }
+
+    public sendAttachment(form_data: any, page_id): Promise<any> {
+      const page_token = this.getPageToken(page_id);
+
+      // Construct the body as URL-encoded format
+      const body = new URLSearchParams();
+      body.set('form_data', form_data);
+      body.set('access_token', page_token);
+
+      return new Promise((resolve, reject) => {
+        return this.http
+          .post(
+            `${API.host}/${page_id}/messages`,
+            form_data,
+            {
+              headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+              })
+            }
+          )
+          .pipe(
+            catchError((error) => {
+              this.jwtService.formatErrors(error);
+              return [];
+            })
+          )
+          .toPromise()
+          .then((response) => resolve(response))
+          .catch(() => false);
+      })
+    }
+
+    public sendMessage(psid, page_id, message) {
+      const page_token = this.getPageToken(page_id);
+
+      // Construct the body as URL-encoded format
+      const body = new URLSearchParams();
+      body.set('recipient', JSON.stringify({ id: psid }));
       body.set('message', JSON.stringify({ text: message }));
       body.set('access_token', page_token);
       body.set('messaging_type', "MESSAGE_TAG");
       body.set('tag', "POST_PURCHASE_UPDATE");
-
-      return this.http
-        .post(
-          `${API.host}/${page_id}/messages`,
-          body.toString(),
-          {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/x-www-form-urlencoded'
+      return new Promise((resolve, reject) => {
+        return this.http
+          .post(
+            `${API.host}/${page_id}/messages`,
+            body.toString(),
+            {
+              headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+              })
+            }
+          )
+          .pipe(
+            catchError((error) => {
+              this.jwtService.formatErrors(error);
+              return [];
             })
-          }
-        )
-        .pipe(
-          catchError((error) => {
-            this.jwtService.formatErrors(error);
-            return [];
-          })
-        )
-        .toPromise()
-        .then(() => true)
-        .catch(() => false);
+          )
+          .toPromise()
+          .then((response) => resolve(response))
+          .catch(() => false);
+      })
   
     }
 
@@ -72,21 +170,34 @@ export class FacebookConversationsService {
      * This method will return pages without names, conversations without names,
      * and messages in each conversation.
      */
-    public getAllConversationsAndMessages(page_id) {
+    public getAllConversationsAndMessages(page_id, filter) {
       var page_token = this.getPageToken(page_id);
       return new Promise((resolve, reject) => {
-        return this.getConversations(page_token).toPromise().then(
+        return this.getConversations(page_token, filter).toPromise().then(
           (conversations: any) => {
             const result = {
               conversations: [] as any[],
               messages: [] as any[],
+              labels: [] as any[],
             };
             const conversationPromises = conversations.data.map((conversation: any) => {
-              result.conversations.push({ id: conversation.id, page_id: page_id });
+              if(filter == 'unread' && !conversation.unread_count) {
+                return;
+              }
+              let user_psid = conversation.participants.data.find(function(user) {
+                return user.id !== conversation.page_id;
+              })?.id;
+              result.conversations.push({ id: conversation.id, page_id: page_id, user_psid: user_psid });
 
-              return this.getMessages(conversation.id, page_token).toPromise().then(
+              return this.getMessages(conversation.id, page_id).then(
                 (messages: any) => {
                   result.messages.push({ conversationId: conversation.id, messages: messages.data.reverse() });
+
+                  return this.getLabels(user_psid, page_id).then(
+                    (labels: any) => {
+                      result.labels.push({ conversationId: conversation.id, labels: labels.data });
+                    }
+                  )
                 }
               );
             });
