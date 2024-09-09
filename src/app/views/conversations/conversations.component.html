@@ -1,25 +1,56 @@
+<div>
+  <!-- Tab Headers -->
+  <ul class="tab-header">
+    <li (click)="selectTab('chat')" [ngClass]="{'active-tab': selectedTab === 'chat'}">All messages</li>
+    <!-- <li (click)="selectTab('data')" [ngClass]="{'active-tab': selectedTab === 'data'}">Data</li>
+    <li (click)="selectTab('settings')" [ngClass]="{'active-tab': selectedTab === 'settings'}">Settings</li> -->
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Chat Box Tab -->
+  <div *ngIf="selectedTab === 'chat'" class="chat-notes-wrapper">
+    <div >
 <div class="messenger-container">
-  <div class="chat-tabs" >
-    <ul *ngFor="let conversation of conversations" >
-      <li (click)="selectConversation(conversation)">
-        <span >{{ conversation.id }}</span>
+  <!-- Chat interface as provided earlier -->
+  <div class="chat-tabs">
+    <!-- Buttons for Unread, Response, Labels -->
+    <div class="chat-tab-buttons">
+      <button (click)="filterUnread()" class="tab-button">Unread</button>
+      <button (click)="showResponses()" class="tab-button">Response</button>
+      <button (click)="showLabels()" class="tab-button">Labels</button>
+    </div>
+
+    <!-- Conversation List -->
+    <ul>
+      <li *ngFor="let conversation of conversations" (click)="selectConversation(conversation)"
+        [ngClass]="{'active-tab': conversation.id === selectedConversation?.id}">
+        <i class="fas fa-user-circle user-icon"></i>
+        <span>{{ conversation.id }}</span>
       </li>
     </ul>
   </div>
 
-  <div class="chat-view" *ngIf="selectedConversation">
+  <!-- Chat and Notes View -->
+   <div class="box-wrapper" *ngIf="selectedConversation">
+  <div class="chat-view" >
     <div class="chat-header">
-      <span>{{ selectedConversation.id }}</span>
+      <i class="fas fa-user-circle user-icon"></i><span>{{ selectedConversation.id }}</span>
     </div>
+
+    <!-- Chat Messages -->
     <div class="chat-messages">
       <div *ngFor="let message of selectedConversation.messages" class="message-group">
-        <div *ngFor="let messageContent of message.messages" [ngClass]="{'message': messageContent.from.id != selectedConversation.page_id, 'my-message' : messageContent.from.id == selectedConversation.page_id }">
+        <div *ngFor="let messageContent of message.messages"
+          [ngClass]="{'message': messageContent.from.id != selectedConversation.page_id, 'my-message' : messageContent.from.id == selectedConversation.page_id }">
           <p class="client-msg">{{ messageContent.message }}</p>
           <p class="timestamp">{{ messageContent.created_time | date: 'short'}}</p>
           <p>{{ messageContent.created_by }}</p>
         </div>
       </div>
     </div>
+
+    <!-- Chat Input -->
     <div class="chat-input">
       <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage(selected_psid, selectedConversation.page_id, newMessage)" />
@@ -29,5 +60,28 @@
     </div>
   </div>
 
+    <!-- Notes Section (Related to the Selected Conversation) -->
+    <div class="notes-container">
+      <h2>Notes for {{ selectedConversation.id }}</h2>
+      <textarea [(ngModel)]="selectedConversation.notes" rows="6" placeholder="Add notes here..."></textarea>
+      <button (click)="saveNotes()">Save Notes</button>
+    </div>
+    
+  </div>
 </div>
 
+    </div>
+  </div>
+    <!-- Data Tab
+    <div *ngIf="selectedTab === 'data'">
+      <h2>Data View</h2>
+      <p>Here you can display any other data or content.</p>
+    </div>
+
+   ///Settings Tab 
+    <div *ngIf="selectedTab === 'settings'">
+      <h2>Settings</h2>
+      <p>Here you can add settings or any other form controls.</p>
+    </div> -->
+  </div>
+</div>

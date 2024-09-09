@@ -16,6 +16,8 @@ export class ConversationsComponent {
   shortLiveToken: String;
   selectedConversation: any;
   selected_psid: any;
+  selectedTab: string = 'chat';
+  notes: string = '';
   
   constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
@@ -63,5 +65,31 @@ export class ConversationsComponent {
       }
     }, this);
   }
+
+  selectTab(tab: string) {
+    this.selectedTab = tab;
+  }
+
+
+  filterUnread() {
+    // Implement filtering logic for unread conversations
+    this.conversations = this.conversations.filter(conversation => !conversation.read);
+  }
+
+  showResponses() {
+    // Implement logic to show conversations needing a response
+    this.conversations = this.conversations.filter(conversation => conversation.needsResponse);
+  }
+
+  showLabels() {
+    // Implement logic to show labels or categories (optional)
+    console.log("Show labels logic here");
+  }
+
+  saveNotes() {
+    // Implement saving logic
+    console.log('Notes saved:', this.notes);
+  }
 }
+
 
