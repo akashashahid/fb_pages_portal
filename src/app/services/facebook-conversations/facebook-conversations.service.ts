@@ -19,7 +19,7 @@ export class FacebookConversationsService {
     private getConversations(pageToken: string,filter) {
       let params = new HttpParams().set('access_token', pageToken).set('fields', 'participants');
       if(filter == 'unread') {
-        params = params.set('fields', 'unread_count')
+        params = params.set('fields', params.get('fields') + ',unread_count')
       } else if(filter == 'done') {
         params = params.set('folder', 'page_done')
       } else if(filter == 'spam') {
@@ -35,19 +35,32 @@ export class FacebookConversationsService {
     /**
      * Fetches messages for a given conversation ID.
      */
-    public getMessages(conversationId: string, page_id) {
+     public getMessages(conversationId: string, page_id) {
       const page_token = this.getPageToken(page_id);
-      return new Promise((resolve, reject) => {
+      const fetchMessages = (url: string, accumulatedMessages: any[] = []) => {
         return this.http
-          .get(`${API.host}/${conversationId}/messages`, {
-            params: new HttpParams().set('access_token', page_token).set('fields', 'message,created_time,from,tags,attachments'),
+          .get(url, {
+            params: new HttpParams().set('access_token', page_token).set('fields', 'message,created_time,from,tags,attachments').set('limit', '100'), // Set the limit (e.g., 100)
           })
           .pipe(catchError(this.jwtService.formatErrors))
-          .toPromise().then(
-            (messages: any) => {
-              resolve(messages);
+          .toPromise()
+          .then((response: any) => {
+            const messages = accumulatedMessages.concat(response.data); // Accumulate messages
+            const next = response.paging?.next; // Check for next page
+            
+            if (next) {
+              return fetchMessages(next, messages); // Recursively fetch the next page
+            } else {
+              return messages; // Return all messages when done
             }
-          );
+          });
+      };
+    
+      return new Promise((resolve, reject) => {
+        const initialUrl = `${API.host}/${conversationId}/messages`;
+        fetchMessages(initialUrl)
+          .then(resolve)
+          .catch(reject);
       });
     }
 
@@ -65,6 +78,25 @@ export class FacebookConversationsService {
           .toPromise().then(
             (labels: any) => {
               resolve(labels);
+            }
+          ).catch(() => resolve({'data' : []}));;
+      });
+    }
+  
+    /**
+   * Removes labels for a given PSID.
+   */
+    public removeLabel(psid, page_id, label_id) {
+      const page_token = this.getPageToken(page_id);
+      return new Promise((resolve, reject) => {
+        return this.http
+          .delete(`${API.host}/${label_id}/label`, {
+            params: new HttpParams().set('access_token', page_token).set('user', psid),
+          })
+          .pipe(catchError(this.jwtService.formatErrors))
+          .toPromise().then(
+            (response: any) => {
+              resolve(response);
             }
           ).catch(() => resolve({'data' : []}));;
       });
@@ -101,24 +133,19 @@ export class FacebookConversationsService {
       })
     }
 
-    public sendAttachment(form_data: any, page_id): Promise<any> {
+    public sendAttachment(psid, page_id, file: any): Promise<any> {
       const page_token = this.getPageToken(page_id);
-
-      // Construct the body as URL-encoded format
-      const body = new URLSearchParams();
-      body.set('form_data', form_data);
-      body.set('access_token', page_token);
+      const formData = new FormData();
+      formData.append('recipient', JSON.stringify({ id: psid }));
+      formData.append('message', JSON.stringify({ attachment: { type: 'image', payload: { is_reusable: true } } }));
+      formData.append('access_token', page_token);
+      formData.append('filedata', file);
 
       return new Promise((resolve, reject) => {
         return this.http
           .post(
-            `${API.host}/${page_id}/messages`,
-            form_data,
-            {
-              headers: new HttpHeaders({
-                'Content-Type': 'application/x-www-form-urlencoded'
-              })
-            }
+            `${API.host}/${page_id}/message_attachments`,
+            formData,
           )
           .pipe(
             catchError((error) => {
@@ -127,7 +154,35 @@ export class FacebookConversationsService {
             })
           )
           .toPromise()
-          .then((response) => resolve(response))
+          .then((response) => {
+            const body = new URLSearchParams();
+            body.set('recipient', JSON.stringify({ id: psid }));
+            body.set('message', JSON.stringify({ attachment: { type: 'image', payload: { attachment_id: response.attachment_id }}}));
+            body.set('access_token', page_token);
+            body.set('messaging_type', "MESSAGE_TAG");
+            body.set('tag', "POST_PURCHASE_UPDATE");
+            return new Promise((resolve, reject) => {
+              return this.http
+                .post(
+                  `${API.host}/${page_id}/messages`,
+                  body.toString(),
+                  {
+                    headers: new HttpHeaders({
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    })
+                  }
+                )
+                .pipe(
+                  catchError((error) => {
+                    this.jwtService.formatErrors(error);
+                    return [];
+                  })
+                )
+                .toPromise()
+                .then((response) => resolve(response))
+                .catch(() => false);
+            })
+          })
           .catch(() => false);
       })
     }
@@ -179,20 +234,36 @@ export class FacebookConversationsService {
               conversations: [] as any[],
               messages: [] as any[],
               labels: [] as any[],
+              images: [] as any[]
             };
             const conversationPromises = conversations.data.map((conversation: any) => {
-              if(filter == 'unread' && !conversation.unread_count) {
-                return;
-              }
+
               let user_psid = conversation.participants.data.find(function(user) {
                 return user.id !== conversation.page_id;
               })?.id;
-              result.conversations.push({ id: conversation.id, page_id: page_id, user_psid: user_psid });
+              let conversation_obj = { id: conversation.id, page_id: page_id, user_psid: user_psid, unread_count: conversation.unread_count };
+              if(filter == 'done') {
+                conversation_obj['not_done'] = 1;
+              } else if(filter == 'spam'){
+                conversation_obj['not_spam'] = 1;
+              }
+              result.conversations.push(conversation_obj);
 
               return this.getMessages(conversation.id, page_id).then(
                 (messages: any) => {
-                  result.messages.push({ conversationId: conversation.id, messages: messages.data.reverse() });
+                  result.messages.push({ conversationId: conversation.id, messages: messages.reverse() });
+                  let images = [];
+                  messages.forEach(message => {
+                    if (message.attachments && message.attachments.data.length > 0) {
+                      message.attachments.data.forEach(attachment => {
+                        if (attachment.mime_type.startsWith('image/')) {
+                          images.push(attachment.file_url || attachment.image_data?.url);
+                        }
+                      });
+                    }
+                  });
 
+                  result.images.push({ conversationId: conversation.id, images:images });
                   return this.getLabels(user_psid, page_id).then(
                     (labels: any) => {
                       result.labels.push({ conversationId: conversation.id, labels: labels.data });
