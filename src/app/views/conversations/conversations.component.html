@@ -3,7 +3,7 @@
   <ul class="tab-header">
     <li (click)="selectTab('chat')" 
     [ngClass]="{'active-tab': selectedTab === 'chat'}">
-      <span>All messages</span></li>
+      <span>All Messages</span></li>
     <!-- <li (click)="selectTab('data')" [ngClass]="{'active-tab': selectedTab === 'data'}">Data</li>
     <li (click)="selectTab('settings')" [ngClass]="{'active-tab': selectedTab === 'settings'}">Settings</li> -->
   </ul>
@@ -18,7 +18,7 @@
   <div class="chat-tabs" >
     <!-- Buttons for Unread, Response, Labels -->
     <div class="chat-tab-buttons">
-      <button (click)="filterUnread()" class="tab-button">Unread</button>
+      <button (click)="filterUnread()" class="tab-button"><i class="fa fa-envelope"></i>Unread</button>
       <button (click)="showResponses()" class="tab-button">Response</button>
       <button (click)="showLabels()" class="tab-button">Labels</button>
     </div>
@@ -57,14 +57,18 @@
     <div class="chat-input">
       <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage(newMessage)" />
-      <button id="emojiButton"  class="send-btn" (click)="showEmojiPicker(this)">😊</button>
-      <input id="attachment" type="file" class="send-btn" (change)="onFileSelected($event)">
+        <button class="send-btn" (click)="sendMessage(newMessage)">
+          <i class="fa fa-paper-plane"></i>
+        </button>
+      <button id="emojiButton"  class="send-btn" (click)="showEmojiPicker($event.target)">😊</button>
+      <label for="attachment" class="send-btn">
+        <i class="fas fa-paperclip"></i>
+      </label>
+      <input id="attachment" type="file" (change)="onFileSelected($event)" hidden>
       <button class="send-btn" (click)="sendMessage('like')">
-        <i class="fa fa-ups"></i>
+        <i class="fa fa-thumbs-up"></i>
       </button>
-      <button class="send-btn" (click)="sendMessage(newMessage)">
-        <i class="fa fa-paper-plane"></i>
-      </button>
+      
     </div>
   </div>
 
