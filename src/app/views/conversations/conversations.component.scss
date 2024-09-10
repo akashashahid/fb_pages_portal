@@ -54,10 +54,6 @@
   background-color: #f9f9f9;
 }
 
-.message-group {
-  margin-bottom: 10px;
-}
-
 .message {
   padding: 10px;
   border-radius: 5px;
@@ -92,19 +88,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.send-btn i {
+  margin: 10px 5px;
   font-size: 16px;
 }
+
 
 .send-btn:hover {
   background-color: #0056b3;
 }
 
 .timestamp{
-  font-size: 11px;
+  font-size: 0.75rem;
+  color: #999;
+  text-align: right;
+  margin-top: 5px;
 }
+
 .client-msg{
   background-color: #e1e1e1;
   padding: 10px;
@@ -112,13 +111,32 @@
   width: fit-content;
   font-size: 17px;
 }
-.my-message {
-  // float: right;
-}
+
 .my-message .client-msg{
   color: white;
   background-color: #007bff;
-  // float: right;
+}
+
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.my-message {
+  align-self: flex-end;
+  padding: 10px;
+  border-radius: 10px 10px 0 10px;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+.message {
+  align-self: flex-start;
+  padding: 10px;
+  border-radius: 10px 10px 10px 0;
+  max-width: 60%;
+  word-wrap: break-word;
 }
 
 .user-icon{
@@ -147,6 +165,9 @@
   cursor: pointer;
   border-bottom: none;
   background-color: #f9f9f9;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 4pxS;
 }
 
 .tab-header li:hover {
@@ -154,8 +175,8 @@
 }
 
 .active-tab {
-  background-color: #c3dcf4;
-  color: #0a78be;
+  background-color: rgba(225, 237, 247, 1) !important;
+  color: rgba(10, 120, 190, 1) !important;
 }
 
 .tab-content {
@@ -172,8 +193,8 @@
 }
 
 .tab-button {
-  background-color: #007bff;
-  color: white;
+  background-color: rgb(229, 232, 240);
+  color: rgb(28, 43, 51);
   border: none;
   padding: 8px 16px;
   margin-right: 10px;
@@ -209,28 +230,10 @@
 }
 
 
-
-// .chat-notes-wrapper {
-//   display: flex;
-//   justify-content: space-between;
-//   gap: 20px;
-//   /* Space between chat and notes containers */
-// }
-
-// .messenger-container {
-//   flex: 1;
-//   border: 1px solid #ddd;
-//   padding: 10px;
-//   background-color: #f1f1f1;
-// }
-
 .notes-container {
-  // flex: 0.5;
   border: 1px solid #ddd;
   padding: 10px;
   background-color: #f9f9f9;
-  // display: flex;
-  // flex-direction: column;
 }
 
 .notes-container textarea {
@@ -268,10 +271,6 @@
   background-color: #fff;
 }
 
-// .notes-container {
-//   margin-top: 20px;
-// }
-
 .notes-container textarea {
   width: 100%;
   padding: 10px;
@@ -295,4 +294,24 @@
 
 .box-wrapper{
   display: contents;
+}
+label{
+  margin: 0;
+}
+
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.my-message {
+  align-self: flex-end;
+  padding: 10px;
+  border-radius: 10px 10px 0 10px;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+.client-msg {
+  margin: 0;
 }

@@ -48,8 +48,10 @@ export class ConversationsComponent {
 
   showEmojiPicker(el) {
     const picker = new EmojiButton();
+    console.log('zarah')
+    console.log(el);
     picker.showPicker(el);
-
+    
     picker.on('emoji', (emoji: string) => {
       if (this.newMessage) {
         this.newMessage += emoji;
