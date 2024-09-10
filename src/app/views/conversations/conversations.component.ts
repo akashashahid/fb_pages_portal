@@ -30,14 +30,14 @@ export class ConversationsComponent {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
     this.page_id = params.get('id');
-    this.displayConversations();
+    this.displayConversations('');
     this.getAllLabels();
     // Poll for new messages every 5 seconds (5000 ms)
     setInterval(() => {
       if(this.selectedConversation) {
         this.fbConversationsService.getMessages(this.selectedConversation.id, this.page_id).then(
           (messages: any) => {
-            this.selectedConversation.messages[0].messages = messages.data.reverse();
+            this.selectedConversation.messages[0].messages = messages.reverse();
           }
         );
        
@@ -59,21 +59,30 @@ export class ConversationsComponent {
     });
   }
 
-  displayConversations(filter = '') {
+  displayConversations(filter) {
     this.fbConversationsService.getAllConversationsAndMessages(this.page_id, filter)
       .then((result: any) => {
+        console.log(result)
         this.conversations = result.conversations.map(conversation => ({
           ...conversation,
           messages: result.messages.filter(msg => msg.conversationId === conversation.id),
-          labels: result.labels.filter(msg => msg.conversationId === conversation.id)
+          labels: result.labels.filter(msg => msg.conversationId === conversation.id),
+          images: result.images.filter(msg => msg.conversationId === conversation.id)
 
         }));
 
         if(filter) {
           this.conversations = this.conversations.filter(conversation => 
-            conversation.labels[0].labels.some(label => label.page_label_name === filter)
+            conversation.labels[0].labels.some(label => 
+              label.page_label_name === filter 
+              || filter == 'unread' && conversation.unread_count
+              || filter == 'done' && conversation.not_done
+              || filter == 'spam' && conversation.not_spam
+            )
           );
         }
+
+        console.log(this.conversations)
       })
     
       .catch(error => console.error('Error fetching data:', error));
@@ -81,9 +90,6 @@ export class ConversationsComponent {
 
   sendMessage(message) {
     if(!message) {return;}
-    if(message == 'like') {
-      message = '';
-    }
     this.fbConversationsService.sendMessage(this.selected_psid, this.page_id, message)
       .then((result: any) => {
         let new_message = {
@@ -115,19 +121,19 @@ export class ConversationsComponent {
   }
   // Send attachment
   sendAttachment() {
-  const formData = new FormData();
-  formData.append('recipient', JSON.stringify({ id: this.selected_psid }));
-  formData.append('message', JSON.stringify({ attachment: { type: 'file', payload: { is_reusable: true } } }));
-  formData.append('filedata', this.selectedFile);
+    const formData = new FormData();
+    formData.append('recipient', JSON.stringify({ id: this.selected_psid }));
+    formData.append('message', JSON.stringify({ attachment: { type: 'file', payload: { is_reusable: true } } }));
+    formData.append('filedata', this.selectedFile);
 
-  this.fbConversationsService.sendAttachment(formData, this.page_id)
-    .then((result: any) => {
-      // Handle successful attachment sending
-      console.log('Attachment sent:', result);
-      this.selectedFile = null;
-      this.scrollToBottom();
-    })
-    .catch(error => console.error('Error sending attachment:', error));
+    this.fbConversationsService.sendAttachment(this.selected_psid, this.page_id, this.selectedFile)
+      .then((result: any) => {
+        // Handle successful attachment sending
+        console.log('Attachment sent:', result);
+        this.selectedFile = null;
+        this.scrollToBottom();
+      })
+      .catch(error => console.error('Error sending attachment:', error));
   }
 
   selectTab(tab: string) {
@@ -138,14 +144,66 @@ export class ConversationsComponent {
     this.displayConversations('unread');
   }
 
+  markAsUnread() {
+    this.setLabel('unread');
+  }
+
+  filterImportant() {
+    this.displayConversations('! Important');
+  }
+
+  markAsImportant() {
+    this.setLabel('! Important');
+  }
+
+  filterDone() {
+    this.displayConversations('done');
+  }
+
+  moveToDone() {
+    this.setLabel('done');
+  }
+
+  filterFollowup() {
+    this.displayConversations('followup');
+  }
+
+  markAsFollowup() {
+    this.setLabel('followup');
+  }
+
+  filterLabels(label) {
+    this.displayConversations(label);
+  }
+
+  filterSpam() {
+    this.displayConversations('spam');
+  }
+
+  moveToSpam() {
+    this.setLabel('spam');
+  }
+
   showResponses() {
     // Implement logic to show conversations needing a response
     this.conversations = this.conversations.filter(conversation => conversation.needsResponse);
   }
 
   showLabels() {
-    // Implement logic to show labels or categories (optional)
-    console.log("Show labels logic here");
+    this.fbConversationsService.getLabels(this.selected_psid  , this.page_id).then(
+      (labels: any) => {
+        this.allLabels = labels.data;
+      }
+    )
+  }
+
+  removeLabel(label) {
+    let label_id = this.getLabelId(label);
+    this.fbConversationsService.removeLabel(this.selected_psid, this.page_id, label_id).then(
+      (labels: any) => {
+        this.allLabels = labels.data;
+      }
+    )
   }
 
   saveNotes() {

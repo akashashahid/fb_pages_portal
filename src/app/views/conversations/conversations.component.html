@@ -20,7 +20,7 @@
     <div class="chat-tab-buttons">
       <button (click)="filterUnread()" class="tab-button"><i class="fa fa-envelope"></i>Unread</button>
       <button (click)="showResponses()" class="tab-button">Response</button>
-      <button (click)="showLabels()" class="tab-button">Labels</button>
+      <button (click)="getAllLabels()" class="tab-button">Labels</button>
     </div>
 
     <!-- Conversation List -->
@@ -45,8 +45,13 @@
       <div *ngFor="let message of selectedConversation.messages" class="message-group">
         <div *ngFor="let messageContent of message.messages"
           [ngClass]="{'message': messageContent.from.id != selectedConversation.page_id, 'my-message' : messageContent.from.id == selectedConversation.page_id }">
-          <p *ngIf="messageContent.message" class="client-msg">{{ messageContent.message }}</p>
-          <i *ngIf="!messageContent.message" alt="" data-visualcompletion="css-img" class="img" style="background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yb/r/K0tgAtyfuvc.png?_nc_eui2=AeFfYXAqsi9J9MkEhD29uVrlct--tGJuIA1y3760Ym4gDf2A7l5UdjPC-pZy00aHT8SOUJnSFUo3PRyMXTMqj4UM&quot;); background-position: -247px -229px; background-size: auto; width: 36px; height: 36px; background-repeat: no-repeat; display: inline-block;"></i>
+          <p *ngIf="messageContent.message && messageContent.message!='👍'" class="client-msg">{{ messageContent.message }}</p>
+          <i *ngIf="!messageContent.message && messageContent.attachments?.data?.length <= 0 || messageContent.message=='👍'" alt="" data-visualcompletion="css-img" class="img" style="background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yb/r/K0tgAtyfuvc.png?_nc_eui2=AeFfYXAqsi9J9MkEhD29uVrlct--tGJuIA1y3760Ym4gDf2A7l5UdjPC-pZy00aHT8SOUJnSFUo3PRyMXTMqj4UM&quot;); background-position: -247px -229px; background-size: auto; width: 36px; height: 36px; background-repeat: no-repeat; display: inline-block;"></i>
+
+          <img *ngIf="!messageContent.message && messageContent.attachments?.data?.length > 0" 
+           [src]="messageContent.attachments.data[0].file_url || messageContent.attachments.data[0].image_data.url" 
+           [alt]="messageContent.attachments.data[0].name" 
+           class="attachment-img">
           <p class="timestamp">{{ messageContent.created_time | date: 'short'}}</p>
           <p>{{ messageContent.created_by }}</p>
         </div>
@@ -65,7 +70,7 @@
         <i class="fas fa-paperclip"></i>
       </label>
       <input id="attachment" type="file" (change)="onFileSelected($event)" hidden>
-      <button class="send-btn" (click)="sendMessage('like')">
+      <button class="send-btn" (click)="sendMessage('👍')">
         <i class="fa fa-thumbs-up"></i>
       </button>
       
