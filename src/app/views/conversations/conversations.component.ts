@@ -26,6 +26,7 @@ export class ConversationsComponent {
   selectedFile: File = null;
   isDropdownOpen = false;
   selectedConversationLabels: any[];
+  showClearModal: boolean = false;
 
   constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
@@ -279,6 +280,12 @@ export class ConversationsComponent {
       this.isDropdownOpen = false;
     }
   }
+  openClearModal() {
+    this.showClearModal = true;
+  }
 
+  closeClearModal() {
+    this.showClearModal = false;
+  }
 }
 
