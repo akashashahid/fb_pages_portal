@@ -24,7 +24,9 @@ export class ConversationsComponent {
   newMessage: String;
   allLabels: any[] = [];
   selectedFile: File = null;
-  
+  isDropdownOpen = false;
+  selectedConversationLabels: any[];
+
   constructor(private fbConversationsService: FacebookConversationsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -32,7 +34,7 @@ export class ConversationsComponent {
     this.page_id = params.get('id');
     this.displayConversations('');
     this.getAllLabels();
-    // Poll for new messages every 5 seconds (5000 ms)
+    //Poll for new messages every 5 seconds (5000 ms)
     setInterval(() => {
       if(this.selectedConversation) {
         this.fbConversationsService.getMessages(this.selectedConversation.id, this.page_id).then(
@@ -52,11 +54,7 @@ export class ConversationsComponent {
     console.log(el);
     picker.showPicker(el);
     
-    picker.on('emoji', (emoji: string) => {
-      if (this.newMessage) {
-        this.newMessage += emoji;
-      }
-    });
+    picker.on('emoji', (emoji: string) => { if (this.newMessage == undefined) { this.newMessage = ''; } this.newMessage += emoji; });
   }
 
   displayConversations(filter) {
@@ -110,6 +108,7 @@ export class ConversationsComponent {
   selectConversation(conversation: any) {
     this.selectedConversation = conversation;
     this.selected_psid = conversation.user_psid;
+    this.getselectedConversationLabels();
     this.scrollToBottom();
   }
 
@@ -145,7 +144,12 @@ export class ConversationsComponent {
   }
 
   markAsUnread() {
-    this.setLabel('unread');
+    var found = this.selectedConversationLabels.find(label => label.page_label_name === 'unread');
+    if(found){
+      this.removeLabel('unread');
+    }else{
+      this.setLabel('unread');
+    }
   }
 
   filterImportant() {
@@ -153,7 +157,12 @@ export class ConversationsComponent {
   }
 
   markAsImportant() {
-    this.setLabel('! Important');
+    var found = this.selectedConversationLabels.find(label => label.page_label_name === '! Important');
+    if (found) {
+      this.removeLabel('! Important');
+    } else {
+      this.setLabel('! Important');
+    }
   }
 
   filterDone() {
@@ -161,7 +170,12 @@ export class ConversationsComponent {
   }
 
   moveToDone() {
-    this.setLabel('done');
+    var found = this.selectedConversationLabels.find(label => label.page_label_name === 'done');
+    if (found) {
+      this.removeLabel('done');
+    } else {
+      this.setLabel('done');
+    }
   }
 
   filterFollowup() {
@@ -169,7 +183,12 @@ export class ConversationsComponent {
   }
 
   markAsFollowup() {
-    this.setLabel('followup');
+    var found = this.selectedConversationLabels.find(label => label.page_label_name === 'followup');
+    if (found) {
+      this.removeLabel('followup');
+    } else {
+      this.setLabel('followup');
+    }
   }
 
   filterLabels(label) {
@@ -181,7 +200,12 @@ export class ConversationsComponent {
   }
 
   moveToSpam() {
-    this.setLabel('spam');
+    var found = this.selectedConversationLabels.find(label => label.page_label_name === 'spam');
+    if (found) {
+      this.removeLabel('spam');
+    } else {
+      this.setLabel('spam');
+    }
   }
 
   showResponses() {
@@ -189,10 +213,10 @@ export class ConversationsComponent {
     this.conversations = this.conversations.filter(conversation => conversation.needsResponse);
   }
 
-  showLabels() {
+  getselectedConversationLabels() {
     this.fbConversationsService.getLabels(this.selected_psid  , this.page_id).then(
       (labels: any) => {
-        this.allLabels = labels.data;
+        this.selectedConversationLabels = labels.data;
       }
     )
   }
@@ -244,5 +268,17 @@ export class ConversationsComponent {
       console.error('Error scrolling to bottom:', err);
     }
   }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  // Optional: Close the dropdown if clicking outside
+  closeDropdown(event: Event) {
+    if (!event.target || !(<HTMLElement>event.target).closest('.dropdown')) {
+      this.isDropdownOpen = false;
+    }
+  }
+
 }
 
