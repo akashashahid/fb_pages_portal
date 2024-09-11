@@ -45,6 +45,9 @@
   border-bottom: 1px solid #ccc;
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
+  display: flex;
+  justify-content: space-between;
+    align-items: center;
 }
 
 .chat-messages {
@@ -58,6 +61,11 @@
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 5px;
+}
+
+.chat-header span{
+ position: relative;
+ top:5%;
 }
 
 .chat-input {
@@ -129,6 +137,7 @@
   border-radius: 10px 10px 0 10px;
   max-width: 60%;
   word-wrap: break-word;
+  text-align: -webkit-right;
 }
 
 .message {
@@ -229,7 +238,6 @@
   margin-right: 10px;
 }
 
-
 .notes-container {
   border: 1px solid #ddd;
   padding: 10px;
@@ -271,7 +279,7 @@
   background-color: #fff;
 }
 
-.notes-container textarea {
+.notes-container textarea,  .notes-container input{
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
@@ -305,16 +313,96 @@ label{
   gap: 10px;
 }
 
-.my-message {
-  align-self: flex-end;
-  padding: 10px;
-  border-radius: 10px 10px 0 10px;
-  max-width: 60%;
-  word-wrap: break-word;
-}
 .client-msg {
   margin: 0;
 }
 .attachment-img {
   width: 120px;
+}
+
+
+/* Style for the dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Hidden dropdown menu */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Dropdown menu items */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change the color on hover */
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Show the dropdown when the button is clicked */
+.show {
+  display: block;
+}
+.btn-padding{
+  padding: 14px 12px;
+}
+.left-content {
+  display: flex;
+  align-items: center;
+}
+.right-content {
+  display: flex;
+  gap: 10px;
+  /* Adds space between buttons */
+}
+
+.header-btn {
+  padding: 10px 15px;
+  font-size: 15px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.header-btn:hover {
+  background-color: #0056b3;
+}
+
+
+.labels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+      margin: 30px 0;
+  /* Add spacing between the header and the list */
+}
+
+.labels-header h3 {
+  margin: 0;
+}
+
+.labels-header button {
+  color: #007bff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  background-color: transparent !important;
+}
+.labels-header button:hover {
+text-decoration: underline;
+background-color: transparent !important;
 }

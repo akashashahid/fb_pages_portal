@@ -18,10 +18,24 @@
   <div class="chat-tabs" >
     <!-- Buttons for Unread, Response, Labels -->
     <div class="chat-tab-buttons">
-      <button (click)="filterUnread()" class="tab-button"><i class="fa fa-envelope"></i>Unread</button>
-      <button (click)="showResponses()" class="tab-button">Response</button>
-      <button (click)="getAllLabels()" class="tab-button">Labels</button>
+      <button (click)="filterUnread()" class="tab-button"><!-- <i class="fa fa-envelope"></i> -->Unread</button>
+      <button (click)="filterImportant()" class="tab-button">Important</button>
+      <button (click)="filterDone()" class="tab-button">Done</button>
     </div>
+
+  <div class="chat-tab-buttons">
+    <button (click)="filterFollowup()" class="tab-button">Follow UP</button>
+    <button (click)="filterSpam()" class="tab-button">Spam</button>
+    <div class="dropdown">
+      <button class="tab-button dropdown-button" (click)="toggleDropdown()">Labels</button>
+      <div *ngFor="let label of allLabels" class="dropdown-content" [ngClass]="{'show': isDropdownOpen}">
+        <div *ngIf="label.page_label_name !== 'unread' && label.page_label_name !== '! Important' && label.page_label_name !== 'done' && label.page_label_name !== 'spam' && label.page_label_name !== 'followup'">{{label.page_label_name}}</div>
+      </div>
+    </div>
+  </div>
+
+
+
 
     <!-- Conversation List -->
     <ul>
@@ -37,7 +51,17 @@
    <div class="box-wrapper" *ngIf="selectedConversation">
   <div class="chat-view" >
     <div class="chat-header">
-      <i class="fas fa-user-circle user-icon"></i><span>{{ selectedConversation.id }}</span>
+      <div class="left-content">
+        <i class="fas fa-user-circle user-icon"></i><span>{{ selectedConversation.id }}</span>
+      </div>
+      <div class="right-content">
+        <button (click)="moveToSpam()" class="header-btn"><i class="fas fa-exclamation-triangle"></i></button>
+        <button class="header-btn"><i class="fas fa-trash-alt"></i></button>
+        <button (click)="markAsFollowup()" class="header-btn"><i class="fa fa-star"></i></button>
+        <button (click)="markAsUnread()" class="header-btn"><i class="fa fa-envelope" aria-hidden="true"></i></button>
+        <button (click)="markAsImportant()" class="header-btn"><i class="fa fa-exclamation"></i></button>
+        <button (click)="moveToDone()" class="header-btn"><i class="fa fa-check"></i></button>
+      </div>
     </div>
 
     <!-- Chat Messages -->
@@ -62,15 +86,15 @@
     <div class="chat-input">
       <input type="text" placeholder="Type a message..." [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage(newMessage)" />
-        <button class="send-btn" (click)="sendMessage(newMessage)">
+        <button class="send-btn btn-padding" (click)="sendMessage(newMessage)">
           <i class="fa fa-paper-plane"></i>
         </button>
       <button id="emojiButton"  class="send-btn" (click)="showEmojiPicker($event.target)">😊</button>
-      <label for="attachment" class="send-btn">
+      <label for="attachment" class="send-btn btn-padding">
         <i class="fas fa-paperclip"></i>
       </label>
       <input id="attachment" type="file" (change)="onFileSelected($event)" hidden>
-      <button class="send-btn" (click)="sendMessage('👍')">
+      <button class="send-btn btn-padding" (click)="sendMessage('👍')">
         <i class="fa fa-thumbs-up"></i>
       </button>
       
@@ -79,9 +103,22 @@
 
     <!-- Notes Section (Related to the Selected Conversation) -->
     <div class="notes-container">
-      <h2>Notes for {{ selectedConversation.id }}</h2>
-      <textarea [(ngModel)]="selectedConversation.notes" rows="6" placeholder="Add notes here..."></textarea>
+      <h2>Notes</h2>
+      <textarea [(ngModel)]="selectedConversation.notes" rows="3" placeholder="Add notes here..."></textarea>
       <button (click)="saveNotes()">Save Notes</button>
+
+      <div class="labels-header">
+        <h3>Labels</h3>
+        <button (click)="clearLabels()">Manage Labels</button>
+      </div>
+      <ul>
+        <li *ngFor="let label of allLabels">
+          <span>{{label.page_label_name}}</span>
+        </li>
+      </ul>
+
+      <input type="text" [(ngModel)]="newLabel" placeholder="Add new label..." />
+      <button (click)="addLabel()">Add Label</button>
     </div>
     
   </div>
